@@ -1,0 +1,60 @@
+Description: replace Digest::SHA1 with Digest::SHA (in perl core)
+Origin: vendor
+Bug: https://rt.cpan.org/Public/Bug/Display.html?id=81488
+Forwarded: http://rt.cpan.org/Public/Bug/Display.html?id=81488
+Bug-Debian: https://bugs.debian.org/694486
+Author: Salvatore Bonaccorso <carnil@debian.org>
+Reviewed-by: gregor herrmann <gregoa@debian.org>
+Last-Update: 2015-09-13
+
+--- a/META.yml
++++ b/META.yml
+@@ -9,7 +9,7 @@
+     - inc
+     - t
+ requires:
+-  Digest::SHA1: 0
++  Digest::SHA: 0
+   LWP: 0
+   MIME::Base64: 0
+   perl: 5.004
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -6,7 +6,7 @@
+ all_from        'lib/LWP/Authen/Wsse.pm';
+ 
+ requires        'LWP';
+-requires        'Digest::SHA1';
++requires        'Digest::SHA';
+ requires        'MIME::Base64';
+ 
+ sign;
+--- a/lib/LWP/Authen/Wsse.pm
++++ b/lib/LWP/Authen/Wsse.pm
+@@ -6,7 +6,7 @@
+ 
+ $LWP::Authen::Wsse::VERSION = '0.05';
+ 
+-use Digest::SHA1 ();
++use Digest::SHA  ();
+ use MIME::Base64 ();
+ 
+ =head1 NAME
+@@ -75,7 +75,7 @@
+     my $nonce     = $class->make_nonce;
+     my $nonce_enc = MIME::Base64::encode_base64( $nonce, WITHOUT_LINEBREAK );
+     my $digest    = MIME::Base64::encode_base64(
+-        Digest::SHA1::sha1( $nonce . $now . $pass ), WITHOUT_LINEBREAK
++        Digest::SHA::sha1( $nonce . $now . $pass ), WITHOUT_LINEBREAK
+     );
+ 
+     my $auth_header = ( $proxy ? 'Proxy-Authorization' : 'Authorization' );
+@@ -114,7 +114,7 @@
+ }
+ 
+ sub make_nonce {
+-    Digest::SHA1::sha1( time() . {} . rand() . $PID );
++    Digest::SHA::sha1( time() . {} . rand() . $PID );
+ }
+ 
+ sub now_w3cdtf {
